@@ -12,7 +12,7 @@ public class railway {
     @GetMapping("/railway")
 
     public String getData() {
-        return "please book your train ticket on vande bharat 25% discount" ; }
+        return "please book your train ticket on vande bharat 40% discount" ; }
 
     }
 
