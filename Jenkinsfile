@@ -28,8 +28,8 @@ pipeline {
         stage('Building & Tag Docker Image') {
             steps {
                 echo 'Starting Building Docker Image'
-                sh 'docker build -t satyam88/travelbooking-ms .'
-                sh 'docker build -t travelbooking-ms .'
+                sh 'docker build -t vickykohad/easymytrip-ms .'
+                sh 'docker build -t easymytrip-ms .'
                 echo 'Completed  Building Docker Image'
             }
         }
@@ -70,4 +70,4 @@ pipeline {
                  }
               }
            }
-        }
+        }/***
