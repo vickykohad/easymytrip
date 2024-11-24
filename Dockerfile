@@ -1,28 +1,6 @@
-#create image
-FROM tomcate:9.0.52-jrell-openjedk-slim
-
-#Install Java 17
-
-RUN apt-get update && \
-    apt-get install -y openjdk-17-jdk && \
-    apt-get clean;
-
-#Set Java 17 as the default Java version
-RUN update-alternatives --set Java /usr/lib/jvm/java-17-openjdk-amd64/bin/Java && \
-    update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
-
-
-#Copy the JAR file into the Tomcat webapps directory
-COPY ./target/easymytrip*.jar /usr/local/tomcat/webapps
-
-#Expose port 8080
-EXPOSE 8080
-
-#Set the user
-USER easymytrip
-
-#Set the working directory
-WORKDIR /usr/local/tomcat/webapps
-
-#Start Tomcat
-CMD ["catalina.sh", "run"]
+#Create a Nginx Container
+FROM ubuntu
+MAINTAINER demousr@gmail.com
+RUN apt-get update \
+    && apt-get install -y nginx \
+    && apt-get clean \
