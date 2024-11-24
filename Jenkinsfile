@@ -1,16 +1,20 @@
-pipeline {
+pipeline
+{
 
-    options {
+    options
+    {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
 
     agent any
 
-    tools {
+    tools
+    {
         maven 'maven_3.9.4'
     }
 
-    stages {
+    stages
+    {
         stage('Code Compilation') {
             steps {
                 echo 'code compilation is starting'
@@ -71,3 +75,5 @@ pipeline {
               }
            }
         }
+    }
+}
