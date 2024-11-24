@@ -37,7 +37,7 @@ pipeline
                 {
                      def imageName = "vickykohad/easymytrip-ms:dev-easymytrip-ms-v.1.${BUILD_NUMBER}"
                      echo "Starting Building Docker Image: ${imageName}"
-                     sh "docker build -t ${imageName} ."
+                     sh "docker build -t ${imageName}."
                      echo 'Completed  Building Docker Image'
                 }
             }
