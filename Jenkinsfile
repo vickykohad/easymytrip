@@ -33,7 +33,7 @@ pipeline
             steps {
                 echo 'Starting Building Docker Image'
                 sh 'docker build -t vickykohad/easymytrip-ms .'
-                sh 'docker build -t easymytrip-ms .'
+                sh 'docker build -t   easymytrip-ms .'
                 echo 'Completed  Building Docker Image'
             }
         }
