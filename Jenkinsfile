@@ -49,11 +49,11 @@ pipeline
                 echo 'Docker Image Scanning Started'
             }
         }
-        stage(' Docker push to Docker Hub') {
+        stage('Docker push to Docker Hub') {
            steps {
               script {
-                 withCredentials([string(credentialsId: 'dockerhubCred', variable: 'dockerhubCred')]){
-                 sh 'docker login docker.io -u vickykohad -p ${dockerhubCred}'
+                 withCredentials([string(credentialsId: 'DOCKER_HUB_CRED', variable: 'DOCKER_HUB_CRED')]){
+                 sh 'docker login docker.io -u kohadvicky80@gmail.com -p ${DOCKER_HUB_CRED}'
                  echo "Push Docker Image to DockerHub : In Progress"
                  sh 'docker push vickykohad/eastmytrip-ms:latest'
                  echo "Push Docker Image to DockerHub : In Progress"
