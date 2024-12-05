@@ -1,84 +1,52 @@
-pipeline
-{
+pipeline {
+    agent any
 
-    options
-    {
+    options {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
 
-    agent any
-
-    tools
-    {
+    tools {
         maven 'maven_3.9.4'
     }
 
-    stages
-    {
+    stages {
         stage('Code Compilation') {
             steps {
-                echo 'code compilation is starting'
+                echo 'Code Compilation is In Progress!'
                 sh 'mvn clean compile'
-				echo 'code compilation is completed'
+                echo 'Code Compilation is Completed Successfully!'
+            }
+        }
+        stage('Code QA Execution') {
+            steps {
+                echo 'JUnit Test Case Check in Progress!'
+                sh 'mvn clean test'
+                echo 'JUnit Test Case Check Completed!'
             }
         }
         stage('Code Package') {
             steps {
-                echo 'code packing is starting'
+                echo 'Creating WAR Artifact'
                 sh 'mvn clean package'
-				echo 'code packing is completed'
+                echo 'WAR Artifact Creation Completed'
             }
         }
-        stage('Building & Tag Docker Image')
-        {
-            steps
-            {
-                script
-                {
-                     def imageName = "vickykohad/easymytrip-ms:dev-easymytrip-v.1.${BUILD_NUMBER}"
-                     echo "Starting Building Docker Image: ${imageName}"
-                     sh "docker build -t ${imageName} ."
-                     echo 'Completed  Building Docker Image'
+        stage('Building & Tag Docker Image') {
+            steps {
+                echo "Starting Building Docker Image: ${env.IMAGE_NAME}"
+                sh "docker build -t ${env.IMAGE_NAME} ."
+                echo 'Docker Image Build Completed'
+            }
+        }
+        stage('Docker Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CRED', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    echo "Pushing Docker Image to DockerHub: ${env.IMAGE_NAME}"
+                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                    sh "docker push ${env.IMAGE_NAME}"
+                    echo "Docker Image Push to DockerHub Completed"
                 }
             }
-        }
-        stage('Docker Image Scanning') {
-            steps {
-                echo 'Docker Image Scanning Started'
-                sh 'java -version'
-                echo 'Docker Image Scanning Started'
-            }
-        }
-        stage('Docker push to Docker Hub') {
-           steps {
-              script {
-                 withCredentials([string(credentialsId: 'DOCKER_HUB_CRED', variable: 'DOCKER_HUB_CRED')]){
-                 sh "docker login docker.io -u kohadvicky80@gmail.com -p ${DOCKER_PASSWORD}"
-                 echo "Push Docker Image to DockerHub : In Progress"
-                 sh "docker push vickykohad/eastmytrip-ms:latest"
-                 echo "Push Docker Image to DockerHub : In Progress"
-                 sh 'whoami'
-                 }
-              }
-            }
-        }
-        stage(' Docker Image Push to Amazon ECR') {
-           steps {
-              script {
-                 withDockerRegistry([credentialsId:'ecr:ap-south-1:ecr-credentials', url:"https://559220132560.dkr.ecr.ap-south-1.amazonaws.com"]){
-                 sh """
-                 echo "List the docker images present in local"
-                 docker images
-                 echo "Tagging the Docker Image: In Progress"
-                 docker tag travelbooking-ms:latest 559220132560.dkr.ecr.ap-south-1.amazonaws.com/travelbooking-ms:latest
-                 echo "Tagging the Docker Image: Completed"
-                 echo "Push Docker Image to ECR : In Progress"
-                 docker push 559220132560.dkr.ecr.ap-south-1.amazonaws.com/travelbooking-ms:latest
-                 echo "Push Docker Image to ECR : Completed"
-                 """
-                 }
-              }
-           }
         }
     }
 }
