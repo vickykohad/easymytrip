@@ -1,6 +1,9 @@
 pipeline {
     agent any
+    environment {
+            IMAGE_NAME = "vickykohad/easymytrip-ms:dev-easemytrip-ms-v.1.${env.BUILD_NUMBER}"
 
+            }
     options {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
