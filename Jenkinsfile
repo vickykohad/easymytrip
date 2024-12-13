@@ -51,6 +51,7 @@ pipeline {
                     echo "Docker Image Push to DockerHub Completed"
                 }
             }
+        }
         stage('Docker Image Push to Amazon ECR') {
                     steps {
                         echo "Tagging Docker Image for ECR: ${env.ECR_IMAGE_NAME}"
@@ -64,12 +65,14 @@ pipeline {
                         }
                     }
                 }
-        stage('Delete Local Docker Images') {
+                stage('Delete Local Docker Images') {
                     steps {
                         echo "Deleting Local Docker Images: ${env.IMAGE_NAME} ${env.ECR_IMAGE_NAME} ${env.NEXUS_IMAGE_NAME}"
                         sh "docker rmi ${env.IMAGE_NAME} ${env.ECR_IMAGE_NAME}"
                         echo "Local Docker Images Deletion Completed"
                     }
+                }
+            }
         }
     }
 }
