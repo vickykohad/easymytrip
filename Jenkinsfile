@@ -2,8 +2,9 @@ pipeline {
     agent any
     environment {
             IMAGE_NAME = "vickykohad/easymytrip-ms:dev-easemytrip-ms-v.1.${env.BUILD_NUMBER}"
-
+            ECR_IMAGE_NAME = "626635414068.dkr.ecr.ap-south-1.amazonaws.com/easemytrip-ms:dev-easemytrip-ms-v.1.${env.BUILD_NUMBER}"
             }
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
@@ -48,6 +49,27 @@ pipeline {
                     sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
                     sh "docker push ${env.IMAGE_NAME}"
                     echo "Docker Image Push to DockerHub Completed"
+                }
+            }
+        stage('Docker Image Push to Amazon ECR') {
+                    steps {
+                        echo "Tagging Docker Image for ECR: ${env.ECR_IMAGE_NAME}"
+                        sh "docker tag ${env.IMAGE_NAME} ${env.ECR_IMAGE_NAME}"
+                        echo "Docker Image Tagging Completed"
+
+                        withDockerRegistry([credentialsId: 'ecr:ap-south-1:ecr-credentials', url: "https://626635414068.dkr.ecr.ap-south-1.amazonaws.com"]) {
+                            echo "Pushing Docker Image to ECR: ${env.ECR_IMAGE_NAME}"
+                            sh "docker push ${env.ECR_IMAGE_NAME}"
+                            echo "Docker Image Push to ECR Completed"
+                        }
+                    }
+                }
+                stage('Delete Local Docker Images') {
+                    steps {
+                        echo "Deleting Local Docker Images: ${env.IMAGE_NAME} ${env.ECR_IMAGE_NAME} ${env.NEXUS_IMAGE_NAME}"
+                        sh "docker rmi ${env.IMAGE_NAME} ${env.ECR_IMAGE_NAME}"
+                        echo "Local Docker Images Deletion Completed"
+                    }
                 }
             }
         }
